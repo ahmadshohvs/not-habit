@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Not.Habit — Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <div class="logo">
+      <i class="fas fa-seedling"></i>
+      <span class="logo-text">Not.Habit</span>
+    </div>
+    <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+  </div>
+
+  <nav class="nav">
+    <a href="#" class="active" id="nav-dashboard" onclick="return showPage('dashboard',this)">
+      <i class="fas fa-home"></i><span class="nav-text">Dashboard</span>
+    </a>
+    <a href="#" id="nav-planner" onclick="return showPage('planner',this)">
+      <i class="fas fa-calendar-alt"></i><span class="nav-text">Haftalik Reja</span>
+    </a>
+    <a href="#" id="nav-stats" onclick="return showPage('stats',this)">
+      <i class="fas fa-chart-line"></i><span class="nav-text">Statistika</span>
+    </a>
+    <a href="#" id="nav-goals" onclick="return showPage('goals',this)">
+      <i class="fas fa-bullseye"></i><span class="nav-text">Maqsadlar</span>
+    </a>
+    <a href="#" id="nav-tree" onclick="return showPage('tree',this)">
+      <i class="fas fa-tree"></i><span class="nav-text">Daraxtim</span>
+    </a>
+    <a href="#" id="nav-ach" onclick="return showPage('ach',this)">
+      <i class="fas fa-trophy"></i><span class="nav-text">Yutuqlar</span>
+    </a>
+    <a href="#" id="nav-settings" onclick="return showPage('settings',this)">
+      <i class="fas fa-cog"></i><span class="nav-text">Sozlamalar</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-foot">
+    <button class="theme-btn" onclick="toggleTheme()">
+      <i class="fas fa-moon" id="themeIcon"></i>
+      <span class="theme-text">Tungi rejim</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<main class="main" id="main">
+
+  <!-- ── DASHBOARD ── -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <h1>Dashboard</h1>
+      <p id="currentDate"></p>
+    </div>
+    <div class="stats-row">
+      <div class="s-card">
+        <div class="s-icon" style="background:#fff7ed;color:#ea580c"><i class="fas fa-fire"></i></div>
+        <div><div class="s-label">Zanjir</div><div class="s-val" id="statStreak">0 kun</div></div>
+      </div>
+      <div class="s-card">
+        <div class="s-icon" style="background:#f0fdf4;color:#16a34a"><i class="fas fa-check-circle"></i></div>
+        <div><div class="s-label">Bajarildi</div><div class="s-val" id="statDone">0</div></div>
+      </div>
+      <div class="s-card">
+        <div class="s-icon" style="background:#eff6ff;color:#2563eb"><i class="fas fa-bolt"></i></div>
+        <div><div class="s-label">Samaradorlik</div><div class="s-val" id="statEff">0%</div></div>
+      </div>
+      <div class="s-card">
+        <div class="s-icon" style="background:#faf5ff;color:#7c3aed"><i class="fas fa-bullseye"></i></div>
+        <div><div class="s-label">Maqsadlar</div><div class="s-val" id="statGoals">0/0</div></div>
+      </div>
+    </div>
+    <div class="add-box">
+      <input id="newHabitInput" placeholder="Yangi odat nomi..." onkeydown="if(event.key==='Enter')addHabit()">
+      <button class="btn-primary" onclick="addHabit()">+ Qo'shish</button>
+    </div>
+    <div class="table-wrap">
+      <table><thead><tr id="daysRow"></tr></thead><tbody id="habitBody"></tbody></table>
+    </div>
+    <div class="charts-grid">
+      <div class="chart-card"><h3>Haftalik samaradorlik</h3><canvas id="barChart"></canvas></div>
+      <div class="chart-card"><h3>Umumiy holat</h3><canvas id="doughnutChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ── HAFTALIK REJA ── -->
+  <div class="page" id="page-planner">
+    <div class="page-header">
+      <h1>Haftalik Reja</h1>
+      <p>Soat bo'yicha kunlik vazifalar</p>
+    </div>
+    <div class="planner-wrap">
+      <table class="planner-table">
+        <thead>
+          <tr>
+            <th style="width:80px">Vaqt</th>
+            <th>Dushanba</th><th>Seshanba</th><th>Chorshanba</th>
+            <th>Payshanba</th><th>Juma</th><th>Shanba</th><th>Yakshanba</th>
+          </tr>
+        </thead>
+        <tbody id="plannerBody"></tbody>
+      </table>
+    </div>
+    <button class="add-time-btn" onclick="addTimeRow()">
+      <i class="fas fa-plus"></i> Vaqt qo'shish
+    </button>
+  </div>
+
+  <!-- ── STATISTIKA ── -->
+  <div class="page" id="page-stats">
+    <div class="page-header">
+      <h1>Statistika</h1>
+      <p>Oylik va haftalik ko'rsatkichlar</p>
+    </div>
+    <div class="stats-row">
+      <div class="s-card">
+        <div class="s-icon" style="background:#fff7ed;color:#ea580c"><i class="fas fa-fire"></i></div>
+        <div><div class="s-label">Eng uzun zanjir</div><div class="s-val" id="st1">0 kun</div></div>
+      </div>
+      <div class="s-card">
+        <div class="s-icon" style="background:#f0fdf4;color:#16a34a"><i class="fas fa-star"></i></div>
+        <div><div class="s-label">Jami bajarildi</div><div class="s-val" id="st2">0</div></div>
+      </div>
+      <div class="s-card">
+        <div class="s-icon" style="background:#eff6ff;color:#2563eb"><i class="fas fa-percent"></i></div>
+        <div><div class="s-label">Samaradorlik</div><div class="s-val" id="st3">0%</div></div>
+      </div>
+      <div class="s-card">
+        <div class="s-icon" style="background:#faf5ff;color:#7c3aed"><i class="fas fa-calendar-check"></i></div>
+        <div><div class="s-label">Faol kunlar</div><div class="s-val" id="st4">0</div></div>
+      </div>
+    </div>
+    <div class="stat-charts-grid">
+      <div class="stat-chart-tall"><h3>30 kunlik progress</h3><canvas id="lineChart"></canvas></div>
+      <div class="stat-chart-tall"><h3>Odat bo'yicha statistika</h3><canvas id="habitBarChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ── MAQSADLAR ── -->
+  <div class="page" id="page-goals">
+    <div class="page-header">
+      <h1>Maqsadlar</h1>
+      <p>Oylik maqsadlar va qadamlar</p>
+    </div>
+    <div class="goals-top">
+      <div class="s-card">
+        <div class="s-icon" style="background:#faf5ff;color:#7c3aed"><i class="fas fa-list"></i></div>
+        <div><div class="s-label">Jami maqsad</div><div class="s-val" id="gTotal">0</div></div>
+      </div>
+      <div class="s-card">
+        <div class="s-icon" style="background:#f0fdf4;color:#16a34a"><i class="fas fa-check-double"></i></div>
+        <div><div class="s-label">Bajarildi</div><div class="s-val" id="gDone" style="color:var(--green)">0</div></div>
+      </div>
+      <div class="s-card">
+        <div class="s-icon" style="background:#fff7ed;color:#ea580c"><i class="fas fa-spinner"></i></div>
+        <div><div class="s-label">Jarayonda</div><div class="s-val" id="gInprog" style="color:var(--orange)">0</div></div>
+      </div>
+    </div>
+    <div class="add-box">
+      <input id="goalInput" placeholder="Yangi maqsad..." onkeydown="if(event.key==='Enter')addGoal()">
+      <select id="goalCat">
+        <option value="soglik">Sog'liq</option>
+        <option value="ish">Ish / O'qish</option>
+        <option value="shaxsiy">Shaxsiy</option>
+        <option value="moliya">Moliya</option>
+        <option value="boshqa">Boshqa</option>
+      </select>
+      <button class="btn-primary" onclick="addGoal()">+ Qo'shish</button>
+    </div>
+    <div class="cat-tabs" id="catTabs"></div>
+    <div id="goalsList"></div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       ── DARAXTIM ──
+  ══════════════════════════════════ -->
+  <div class="page" id="page-tree">
+    <div class="page-header">
+      <h1>Mening Daraxtim 🌳</h1>
+      <p>Odatlaringiz o'sishi bilan daraxt ham o'sadi</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
+
+      <!-- Daraxt widget -->
+      <div class="tree-widget">
+        <div class="tree-widget-header">
+          <h3><i class="fas fa-seedling"></i> Daraxtim</h3>
+          <span class="tree-stage-badge" id="treeStageBadge">—</span>
+        </div>
+
+        <!-- Canvas -->
+        <div class="tree-canvas-wrap">
+          <canvas id="treeCanvas"></canvas>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="tree-progress-row">
+          <span>O'sish</span>
+          <div class="tree-prog-bg">
+            <div class="tree-prog-fill" id="treeProgFill" style="width:0%"></div>
+          </div>
+          <span class="tree-pct" id="treeProgPct">0%</span>
+        </div>
+
+        <!-- 3 stat -->
+        <div class="tree-stats">
+          <div class="tree-stat">
+            <div class="tree-stat-val" id="tStatEff">0%</div>
+            <div class="tree-stat-lbl">Samaradorlik</div>
+          </div>
+          <div class="tree-stat">
+            <div class="tree-stat-val" id="tStatStreak">0</div>
+            <div class="tree-stat-lbl">Streak</div>
+          </div>
+          <div class="tree-stat">
+            <div class="tree-stat-val" id="tStatFruit">0</div>
+            <div class="tree-stat-lbl">Mevalar</div>
+          </div>
+        </div>
+
+        <!-- Xabar -->
+        <div class="tree-message" id="treeMessage">Yuklanmoqda...</div>
+        <div class="tree-next-goal" id="treeNextGoal"></div>
+      </div>
+
+      <!-- O'ng: bosqichlar + qoidalar -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <div class="chart-card">
+          <h3 style="margin-bottom:16px">
+            <i class="fas fa-layer-group" style="color:var(--green);margin-right:8px"></i>
+            O'sish bosqichlari
+          </h3>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;background:var(--bg)">
+              <span style="font-size:22px">🌰</span>
+              <div>
+                <div style="font-size:13px;font-weight:600">Urug'</div>
+                <div style="font-size:11px;color:var(--text-muted)">0 – 20% samaradorlik</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;background:var(--bg)">
+              <span style="font-size:22px">🌱</span>
+              <div>
+                <div style="font-size:13px;font-weight:600">Kichik nihol</div>
+                <div style="font-size:11px;color:var(--text-muted)">20 – 40% samaradorlik</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;background:var(--bg)">
+              <span style="font-size:22px">🌿</span>
+              <div>
+                <div style="font-size:13px;font-weight:600">O'sayotgan daraxt</div>
+                <div style="font-size:11px;color:var(--text-muted)">40 – 60% samaradorlik</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;background:var(--bg)">
+              <span style="font-size:22px">🌲</span>
+              <div>
+                <div style="font-size:13px;font-weight:600">Katta daraxt</div>
+                <div style="font-size:11px;color:var(--text-muted)">60 – 80% samaradorlik</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;background:var(--green-light);border:1px solid var(--green)">
+              <span style="font-size:22px">🌳</span>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--green)">To'liq daraxt + Mevalar</div>
+                <div style="font-size:11px;color:var(--text-muted)">80 – 100% + streak 5+ kun</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3 style="margin-bottom:14px">
+            <i class="fas fa-info-circle" style="color:var(--primary);margin-right:8px"></i>
+            Daraxt qoidalari
+          </h3>
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:var(--text-muted);line-height:1.6">
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <span style="color:var(--green);font-weight:700;flex-shrink:0">+</span>
+              <span>Har 5 kunlik streak: daraxt tezroq o'sadi, barglar ko'payadi</span>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <span style="flex-shrink:0">🍎</span>
+              <span>Streak 5+ kun bo'lsa mevalar paydo bo'ladi</span>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <span style="flex-shrink:0">🍎🍎</span>
+              <span>Har 10 kunlik streak: 2 ta qo'shimcha meva</span>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <span style="color:var(--orange);font-weight:700;flex-shrink:0">−</span>
+              <span>O'tkazib yuborilgan kunlar: barglar sarg'ayadi</span>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <span style="color:var(--red);font-weight:700;flex-shrink:0">!</span>
+              <span>3+ kun odat bajarmasa: daraxt qurib boradi</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── YUTUQLAR ── -->
+  <div class="page" id="page-ach">
+    <div class="ach-header-row">
+      <h2><i class="fas fa-trophy" style="color:#f59e0b;margin-right:8px"></i>Yutuqlar</h2>
+      <span class="ach-count-badge" id="achCount">0/0</span>
+    </div>
+    <div class="ach-grid" id="achGrid"></div>
+  </div>
+
+  <!-- ── SOZLAMALAR ── -->
+  <div class="page" id="page-settings">
+    <div class="page-header">
+      <h1>Sozlamalar</h1>
+      <p>Ilova sozlamalari va ma'lumotlar</p>
+    </div>
+    <div class="settings-grid">
+      <div class="set-card">
+        <h3><i class="fas fa-paint-brush"></i> Ko'rinish</h3>
+        <div class="set-row">
+          <div><div class="set-label">Tungi rejim</div><div class="set-sub">Qorong'u tema</div></div>
+          <div class="toggle" id="toggleDark" onclick="toggleTheme()"></div>
+        </div>
+        <div class="set-row">
+          <div><div class="set-label">Til</div></div>
+          <select class="set-select"><option>O'zbek</option><option>English</option></select>
+        </div>
+      </div>
+      <div class="set-card">
+        <h3><i class="fas fa-bell"></i> Bildirishnomalar</h3>
+        <div class="set-row">
+          <div><div class="set-label">Kunlik eslatma</div><div class="set-sub">Har kuni soat 09:00</div></div>
+          <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="set-row">
+          <div><div class="set-label">Yutuq bildirishnomasi</div></div>
+          <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+      <div class="set-card">
+        <h3><i class="fas fa-database"></i> Ma'lumotlar</h3>
+        <div class="set-row">
+          <div><div class="set-label">Odatlar soni</div></div>
+          <span id="setHabitCount" style="font-weight:600;font-family:'JetBrains Mono',monospace">0</span>
+        </div>
+        <div class="set-row">
+          <div><div class="set-label">Maqsadlar soni</div></div>
+          <span id="setGoalCount" style="font-weight:600;font-family:'JetBrains Mono',monospace">0</span>
+        </div>
+        <div class="set-row">
+          <div><div class="set-label">Barcha ma'lumotni o'chirish</div><div class="set-sub">Qayta tiklab bo'lmaydi</div></div>
+          <button class="danger-btn" onclick="clearAll()">O'chirish</button>
+        </div>
+      </div>
+      <div class="set-card">
+        <h3><i class="fas fa-info-circle"></i> Ilova haqida</h3>
+        <div class="set-row"><div class="set-label">Versiya</div><span style="font-family:'JetBrains Mono',monospace;font-size:13px">2.0.0</span></div>
+        <div class="set-row"><div class="set-label">Nom</div><span style="font-size:13px;color:var(--text-muted)">Not.Habit</span></div>
+        <div class="set-row">
+          <div class="set-label">Bosh sahifa</div>
+          <a href="index.html" style="font-size:13px;color:var(--primary);text-decoration:none">index.html →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══ MODAL ══ -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <h3 id="modalTitle">Vazifa</h3>
+    <input type="time" id="editTime" style="display:none">
+    <textarea id="editText" placeholder="Vazifani yozing..." style="display:none"></textarea>
+    <div class="color-row" id="colorRow" style="display:none">
+      <div class="c-dot sel" data-color="blue"   style="background:#3b82f6" onclick="selColor('blue',this)"></div>
+      <div class="c-dot"     data-color="green"  style="background:#22c55e" onclick="selColor('green',this)"></div>
+      <div class="c-dot"     data-color="orange" style="background:#f97316" onclick="selColor('orange',this)"></div>
+      <div class="c-dot"     data-color="red"    style="background:#ef4444" onclick="selColor('red',this)"></div>
+      <div class="c-dot"     data-color="purple" style="background:#8b5cf6" onclick="selColor('purple',this)"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-save" onclick="saveModal()">Saqlash</button>
+      <button class="btn-close" onclick="closeModal()">Bekor</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SKRIPTLAR — tartib muhim! ══ -->
+<script src="tree.js"></script>
+<script src="tree-render.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

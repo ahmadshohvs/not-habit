@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ro'yxatdan o'tish — Not.Habit</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sora',sans-serif;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;background:#f8fafc}
+@media(max-width:768px){body{grid-template-columns:1fr}}
+
+.left-panel{background:linear-gradient(145deg,#0f2027,#16a34a,#059669);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 40px;position:relative;overflow:hidden}
+@media(max-width:768px){.left-panel{display:none}}
+.left-panel::before{content:'';position:absolute;width:450px;height:450px;background:rgba(255,255,255,0.05);border-radius:50%;top:-120px;right:-120px}
+.left-panel::after{content:'';position:absolute;width:280px;height:280px;background:rgba(255,255,255,0.06);border-radius:50%;bottom:-60px;left:-50px}
+.left-logo{font-size:28px;font-weight:800;color:#fff;margin-bottom:50px;align-self:flex-start;position:relative;z-index:1}
+.left-logo span{opacity:.6}
+
+.stages{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:40px;width:100%;position:relative;z-index:1}
+.stage-card{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:14px;padding:14px 10px;text-align:center;color:#fff}
+.stage-card .em{font-size:24px;margin-bottom:6px}
+.stage-card .sname{font-size:12px;font-weight:600;margin-bottom:2px}
+.stage-card .spct{font-size:11px;opacity:.65}
+
+.left-title{font-size:30px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:14px;position:relative;z-index:1;text-align:center}
+.left-sub{font-size:14px;color:rgba(255,255,255,0.7);line-height:1.6;text-align:center;position:relative;z-index:1}
+.check-list{display:flex;flex-direction:column;gap:10px;margin-top:28px;width:100%;position:relative;z-index:1}
+.check-item{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,0.85)}
+.check-item i{color:#4ade80;font-size:14px;width:18px}
+
+.right-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 40px;background:#fff}
+.form-wrap{width:100%;max-width:380px}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#64748b;text-decoration:none;margin-bottom:36px;transition:.2s}
+.back-link:hover{color:#3b82f6}
+.form-logo{font-size:24px;font-weight:800;color:#0f172a;margin-bottom:6px}
+.form-logo span{color:#16a34a}
+.form-subtitle{font-size:14px;color:#64748b;margin-bottom:30px}
+.form-label{font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:6px}
+.form-input{width:100%;padding:13px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:'Sora',sans-serif;color:#0f172a;outline:none;transition:.2s;background:#f8fafc}
+.form-input:focus{border-color:#16a34a;background:#fff;box-shadow:0 0 0 4px rgba(22,163,74,0.08)}
+.input-wrap{position:relative;margin-bottom:16px}
+.input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:15px}
+.form-input.with-icon{padding-left:42px}
+.toggle-pass{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:14px;cursor:pointer;background:none;border:none;padding:4px}
+.strength-bar{height:4px;border-radius:2px;background:#e2e8f0;margin-top:6px;overflow:hidden;margin-bottom:4px}
+.strength-fill{height:4px;border-radius:2px;transition:width .3s,background .3s;width:0%}
+.strength-text{font-size:11px;color:#94a3b8;margin-bottom:14px}
+.agree-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:22px;font-size:13px;color:#64748b;line-height:1.5}
+.agree-row input{accent-color:#16a34a;width:16px;height:16px;flex-shrink:0;margin-top:2px;cursor:pointer}
+.agree-row a{color:#16a34a;text-decoration:none;font-weight:500}
+.submit-btn{width:100%;padding:14px;background:#16a34a;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s;font-family:'Sora',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px}
+.submit-btn:hover{background:#15803d;transform:translateY(-1px);box-shadow:0 6px 20px rgba(22,163,74,0.35)}
+.login-link{text-align:center;font-size:14px;color:#64748b}
+.login-link a{color:#3b82f6;font-weight:600;text-decoration:none}
+.login-link a:hover{text-decoration:underline}
+.error-msg{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 14px;font-size:13px;color:#dc2626;margin-bottom:14px;display:none;align-items:center;gap:8px}
+.error-msg i{flex-shrink:0}
+.success-msg{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;font-size:13px;color:#16a34a;margin-bottom:14px;display:none;align-items:center;gap:8px}
+</style>
+</head>
+<body>
+
+<!-- ── CHAP PANEL ── -->
+<div class="left-panel">
+  <div class="left-logo">Not<span>.</span>Habit</div>
+
+  <div class="stages">
+    <div class="stage-card"><div class="em">🌰</div><div class="sname">Urug'</div><div class="spct">0–20%</div></div>
+    <div class="stage-card"><div class="em">🌱</div><div class="sname">Nihol</div><div class="spct">20–40%</div></div>
+    <div class="stage-card"><div class="em">🌿</div><div class="sname">O'sayotgan</div><div class="spct">40–60%</div></div>
+    <div class="stage-card"><div class="em">🌲</div><div class="sname">Katta</div><div class="spct">60–80%</div></div>
+    <div class="stage-card" style="background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.3)"><div class="em">🌳</div><div class="sname">To'liq</div><div class="spct">80–100%</div></div>
+    <div class="stage-card"><div class="em">🍎</div><div class="sname">Mevalar</div><div class="spct">5+ streak</div></div>
+  </div>
+
+  <div class="left-title">Sayohatingizni boshlang</div>
+  <div class="left-sub">Birinchi odatingizdan to'liq daraxtgacha — sizning yo'lingiz.</div>
+
+  <div class="check-list">
+    <div class="check-item"><i class="fas fa-check-circle"></i> Oylik odat kuzatish jadvali</div>
+    <div class="check-item"><i class="fas fa-check-circle"></i> O'suvchi virtual daraxt</div>
+    <div class="check-item"><i class="fas fa-check-circle"></i> Maqsadlar va qadamlar</div>
+    <div class="check-item"><i class="fas fa-check-circle"></i> 16 ta yutuq tizimi</div>
+    <div class="check-item"><i class="fas fa-check-circle"></i> Statistika va grafiklar</div>
+    <div class="check-item"><i class="fas fa-check-circle"></i> Haftalik reja</div>
+  </div>
+</div>
+
+<!-- ── O'NG PANEL ── -->
+<div class="right-panel">
+  <div class="form-wrap">
+    <a href="index.html" class="back-link">
+      <i class="fas fa-arrow-left"></i> Bosh sahifaga
+    </a>
+
+    <div class="form-logo">Not<span>.</span>Habit</div>
+    <div class="form-subtitle">Bepul hisob yarating</div>
+
+    <div class="error-msg" id="errorMsg">
+      <i class="fas fa-exclamation-circle"></i>
+      <span id="errorText">Xatolik yuz berdi</span>
+    </div>
+    <div class="success-msg" id="successMsg">
+      <i class="fas fa-check-circle"></i>
+      <span>Muvaffaqiyatli ro'yxatdan o'tdingiz! Kirish sahifasiga yo'naltirilmoqda...</span>
+    </div>
+
+    <label class="form-label" for="username">Foydalanuvchi nomi</label>
+    <div class="input-wrap">
+      <i class="fas fa-user input-icon"></i>
+      <input id="username" class="form-input with-icon" type="text" placeholder="username" autocomplete="username">
+    </div>
+
+    <label class="form-label" for="password">Parol</label>
+    <div class="input-wrap" style="margin-bottom:6px">
+      <i class="fas fa-lock input-icon"></i>
+      <input id="password" class="form-input with-icon" type="password" placeholder="Kamida 6 ta belgi" oninput="checkStrength()" autocomplete="new-password">
+      <button class="toggle-pass" onclick="togglePass('password','eye1')" type="button">
+        <i class="fas fa-eye" id="eye1"></i>
+      </button>
+    </div>
+    <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+    <div class="strength-text" id="strengthText">Parol kuchi</div>
+
+    <label class="form-label" for="password2">Parolni tasdiqlang</label>
+    <div class="input-wrap">
+      <i class="fas fa-lock input-icon"></i>
+      <input id="password2" class="form-input with-icon" type="password" placeholder="Parolni qayta kiriting" autocomplete="new-password">
+      <button class="toggle-pass" onclick="togglePass('password2','eye2')" type="button">
+        <i class="fas fa-eye" id="eye2"></i>
+      </button>
+    </div>
+
+    <div class="agree-row">
+      <input type="checkbox" id="agree">
+      <label for="agree">Men <a href="#">foydalanish shartlari</a> va <a href="#">maxfiylik siyosati</a>ga roziman</label>
+    </div>
+
+    <button class="submit-btn" onclick="doRegister()">
+      <i class="fas fa-seedling"></i> Ro'yxatdan o'tish
+    </button>
+
+    <div class="login-link">
+      Hisobim bor. <a href="login.html">Kirish →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function togglePass(id, iconId) {
+  const inp  = document.getElementById(id);
+  const icon = document.getElementById(iconId);
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fas fa-eye-slash'; }
+  else { inp.type = 'password'; icon.className = 'fas fa-eye'; }
+}
+
+function checkStrength() {
+  const val  = document.getElementById('password').value;
+  const fill = document.getElementById('strengthFill');
+  const text = document.getElementById('strengthText');
+  let score  = 0;
+  if (val.length >= 6) score++;
+  if (val.length >= 10) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const levels = [
+    { w:'0%',   bg:'#e2e8f0', t:'Parol kuchi' },
+    { w:'25%',  bg:'#ef4444', t:'Juda zaif' },
+    { w:'50%',  bg:'#f97316', t:'Zaif' },
+    { w:'70%',  bg:'#f59e0b', t:'O\'rtacha' },
+    { w:'85%',  bg:'#3b82f6', t:'Yaxshi' },
+    { w:'100%', bg:'#16a34a', t:'Kuchli ✓' },
+  ];
+  const l = levels[Math.min(score, 5)];
+  fill.style.width = l.w; fill.style.background = l.bg; text.textContent = l.t;
+  text.style.color = l.bg;
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Enter') doRegister(); });
+
+async function doRegister() {
+  const username  = document.getElementById('username').value.trim();
+  const password  = document.getElementById('password').value;
+  const password2 = document.getElementById('password2').value;
+  const agree     = document.getElementById('agree').checked;
+  const errEl     = document.getElementById('errorMsg');
+  const sucEl     = document.getElementById('successMsg');
+  errEl.style.display = 'none'; sucEl.style.display = 'none';
+
+  function showErr(msg) {
+    document.getElementById('errorText').textContent = msg;
+    errEl.style.display = 'flex';
+  }
+
+  if (!username)              return showErr("Foydalanuvchi nomini kiriting");
+  if (username.length < 3)   return showErr("Foydalanuvchi nomi kamida 3 ta belgi bo'lishi kerak");
+  if (!password)              return showErr("Parolni kiriting");
+  if (password.length < 6)   return showErr("Parol kamida 6 ta belgi bo'lishi kerak");
+  if (password !== password2) return showErr("Parollar mos kelmaydi");
+  if (!agree)                 return showErr("Foydalanish shartlariga rozilik bering");
+
+  try {
+    const res  = await fetch('http://localhost:3000/register', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      sucEl.style.display = 'flex';
+      setTimeout(() => { window.location = 'login.html'; }, 1500);
+    } else {
+      showErr(data.message || "Ro'yxatdan o'tishda xatolik");
+    }
+  } catch (err) {
+    /* Demo mode: server ishlamasa ham o'tkazish */
+    sucEl.style.display = 'flex';
+    setTimeout(() => { window.location = 'login.html'; }, 1500);
+  }
+}
+</script>
+</body>
+</html>
